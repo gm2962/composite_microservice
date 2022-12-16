@@ -10,11 +10,18 @@ import random
 app = Flask(__name__)
 CORS(app)
 
-ITEMS_MICROSERVICE_BASE = "http://127.0.0.1:5012"
-USER_INFO_MICROSERVICE_BASE = "http://127.0.0.1:5011"
-#ORDERS_ITEMS_MICROSERVICE_BASE = os.environ("MICROSERVICE3_ADDRESS") #TODO
+ITEMS_MICROSERVICE_BASE = os.environ.get("MICROSERVICE1_ADDRESS")
+USER_INFO_MICROSERVICE_BASE = os.environ.get("MICROSERVICE2_ADDRESS")
+ORDERS_ITEMS_MICROSERVICE_BASE = os.environ.get("MICROSERVICE3_ADDRESS")
 
 
+@app.route("/")
+def landing():
+    return f"Welcome to the composite microservice!\n" \
+           f"Expecting microservices at:\n" \
+           f"microservice1 = {ITEMS_MICROSERVICE_BASE}\n" \
+           f"microservice2 = {USER_INFO_MICROSERVICE_BASE}\n" \
+           f"microservice3 = {ORDERS_ITEMS_MICROSERVICE_BASE}"
 
 @app.route("/create_product", methods=["GET", "POST"])
 def create_product():
