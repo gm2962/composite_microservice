@@ -17,36 +17,33 @@ ORDERS_ITEMS_MICROSERVICE_BASE = os.environ.get("MICROSERVICE3_ADDRESS")
 
 @app.route("/")
 def landing():
-    return f"Welcome to the composite microservice!\n" \
-           f"Expecting microservices at:\n" \
-           f"microservice1 = {ITEMS_MICROSERVICE_BASE}\n" \
-           f"microservice2 = {USER_INFO_MICROSERVICE_BASE}\n" \
-           f"microservice3 = {ORDERS_ITEMS_MICROSERVICE_BASE}"
+    return json.dumps({"msg": "Welcome to the composite microservice!:",
+                       "m1": ITEMS_MICROSERVICE_BASE,
+                       "m2": USER_INFO_MICROSERVICE_BASE,
+                       "m3": ORDERS_ITEMS_MICROSERVICE_BASE})
 
-@app.route("/create_product", methods=["GET", "POST"])
+@app.route("/create_product", methods=["POST"])
 def create_product():
-    #login user and see if they have the same user id
-    right_data = {"user_id": "gm2962"}
-    check_rights = requests.get(f"{USER_INFO_MICROSERVICE_BASE}/is_admin", json=right_data).json()
-    if check_rights["is_admin"] == 0:
-        return "No admin privilages to add product...Sorry"
+    content = json.loads(request.data)
+    print(json.dumps(content))
+    product_id = content['product_id']
+    name = content['name']
+    category = content['category']
+    price = content["price"]
 
+    data = {
+        "product_id": product_id,
+        "name": name,
+        "category": category,
+        "price": price
+    }
+    print(f"Creating product with id {product_id}")
+    print(f"Going to {USER_INFO_MICROSERVICE_BASE}/create_product")
+    print(f"Going to {USER_INFO_MICROSERVICE_BASE}/create_product")
+    res = requests.post(f"{ITEMS_MICROSERVICE_BASE}/create_product", data=json.dumps(data))
+    res = requests.post(f"{ORDERS_ITEMS_MICROSERVICE_BASE}/create_product", data=json.dumps(data))
+    return Response("Addition attempted", status=200, content_type="text/plain")
 
-    if request.method == 'POST':
-        product_id = request.form.get('product_id')
-        name = request.form.get('name')
-        category = request.form.get('category')
-        price = request.form.get("price")
-
-        data = {
-            "product_id": product_id,
-            "name": name,
-            "category": category,
-            "price": price
-        }
-        return requests.post(f"{ITEMS_MICROSERVICE_BASE}/create_product", json=data).json()
-
-    return render_template('add_product.html')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
