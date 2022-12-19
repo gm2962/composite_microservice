@@ -39,7 +39,7 @@ def create_product():
     }
     print(f"Creating product with id {product_id}")
     print(f"Going to {USER_INFO_MICROSERVICE_BASE}/create_product")
-    print(f"Going to {USER_INFO_MICROSERVICE_BASE}/create_product")
+    print(f"Going to {ORDERS_ITEMS_MICROSERVICE_BASE}/create_product")
     res = requests.post(f"{ITEMS_MICROSERVICE_BASE}/create_product", data=json.dumps(data))
     res = requests.post(f"{ORDERS_ITEMS_MICROSERVICE_BASE}/create_product", data=json.dumps(data))
     return Response("Addition attempted", status=200, content_type="text/plain")
